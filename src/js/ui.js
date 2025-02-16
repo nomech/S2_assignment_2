@@ -180,7 +180,53 @@ class Ui {
 
       deleteButton.addEventListener("click", () => {
         ClientController.deleteProducts(product.id);
-        Ui.renderData();
+        Ui.renderData(Ui.currentTab);
+      });
+    });
+  }
+
+  static currentTab = "all";
+
+  // renders data
+  static renderData(type) {
+    Ui.currentTab = type;
+
+    const data =
+      JSON.parse(localStorage.getItem("products")) ||
+      "There is currently no products";
+
+    if (Ui.currentTab === "all") {
+      const allData = data.all ? data.all : [];
+      this.createElements(allData);
+    } else if (Ui.currentTab === "otc") {
+      const otcData = data.all.filter((item) => {
+        return item.type === "otc";
+      });
+      this.createElements(otcData);
+    } else if (Ui.currentTab === "prescription") {
+      const prescriptionData = data.all.filter((item) => {
+        return item.type === "prescription";
+      });
+      this.createElements(prescriptionData);
+    } else {
+      console.log("Invalid type");
+    }
+  }
+
+  static renderDataOnClick(tabs) {
+    tabs.forEach((tab) => {
+      tab.addEventListener("click", () => {
+        // Removes any active tab indicator
+        tabs.forEach((tab) => {
+          if (tab.classList.contains("tab--active"))
+            tab.classList.remove("tab--active");
+        });
+
+        //Renders data for the current tab.
+        Ui.renderData(tab.dataset.id);
+
+        //Makes the current tab active
+        tab.classList.add("tab--active");
       });
     });
   }
